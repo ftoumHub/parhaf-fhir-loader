@@ -1,0 +1,69 @@
+# Configuration autonome pour hapi-fhir-jpaserver-starter.
+#
+# ATTENTION : ce fichier REMPLACE integralement l'application.yaml embarque
+# dans l'image. Tout ce qui n'est pas ici revient aux defauts du code, pas
+# aux defauts du starter. D'ou la datasource explicite ci-dessous.
+
+spring:
+  main:
+    allow-circular-references: true
+  datasource:
+    url: jdbc:postgresql://db:5432/hapi
+    username: hapi
+    password: hapi
+    driverClassName: org.postgresql.Driver
+    max-active: 15
+  jpa:
+    properties:
+      hibernate.dialect: ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect
+      hibernate.search.enabled: false
+
+hapi:
+  fhir:
+    fhir_version: R4
+
+    # --- Chargement de l'IG socle francais ---------------------------------
+    # FR Core vient d'Interop'Sante / HL7 France. C'est le socle dont heritent
+    # les volets ANS ; on commence par lui seul.
+    # Verifie la derniere version publiee avant de figer ce numero.
+    implementationguides:
+      fr-core:
+        name: hl7.fhir.fr.core
+        version: 2.2.0
+        installMode: STORE_AND_INSTALL
+        reloadExisting: false
+        fetchDependencies: true
+
+    # --- Terminologies -----------------------------------------------------
+    # Coupe la pre-expansion des ValueSet. Sans ca, le demarrage plante sur les
+    # CodeSystem TRE de l'ANS (TRE_R13-CommuneOM et consorts), qui vivent sur
+    # le SMT et ne sont PAS embarques dans les packages IG.
+    # Erreur typique sans ce reglage :
+    #   HAPI-0702: Unable to expand ValueSet because CodeSystem could not be found
+    pre_expand_value_sets: false
+
+    # --- Validation --------------------------------------------------------
+    # Volontairement desactivee. On charge d'abord, on valide ensuite.
+    # Passe a true une fois le corpus en place et le serveur stable, en sachant
+    # que le bloc TRE ci-dessus reste manquant.
+    enable_repository_validating_interceptor: false
+
+    # --- Confort d'exploration ---------------------------------------------
+    # GraphQL : tres pratique pour traverser Patient -> Encounter ->
+    # DocumentReference en une requete.
+    graphql_enabled: true
+    # UI de test sur http://localhost:8080
+    tester_enabled: true
+    default_page_size: 50
+    max_page_size: 200
+
+    # Les Binary du corpus sont volumineux ; on garde l'integrite referentielle
+    # active parce que le loader publie tout dans une seule transaction par
+    # patient, donc les references se resolvent toujours.
+    enforce_referential_integrity_on_write: true
+    enforce_referential_integrity_on_delete: false
+
+    # Recherches par texte desactivees (Hibernate Search coupe plus haut).
+    advanced_lucene_indexing: false
+    allow_multiple_delete: true
+    allow_external_references: true

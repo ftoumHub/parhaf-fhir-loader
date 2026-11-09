@@ -1,0 +1,38 @@
+parhaf-fhir-loader
+Copyright (c) 2026
+
+Ce projet charge le corpus PARHAF dans un serveur FHIR. Il ne redistribue pas
+le corpus lui-meme : le script scripts/export-parhaf.py le telecharge depuis
+Hugging Face au moment de l'execution.
+
+---------------------------------------------------------------------------
+Corpus PARHAF
+---------------------------------------------------------------------------
+
+PARHAF (PARTAGES Human-Authored corpus of clinical reports For fictitious
+patients) est publie par la Plateforme des donnees de sante (Health Data Hub)
+dans le cadre du projet PARTAGES, avec l'AP-HP, le LISN et le LIMICS.
+
+  https://huggingface.co/datasets/HealthDataHub/PARHAF
+
+Licences : CC BY 4.0 et Etalab 2.0.
+
+La licence CC BY 4.0 impose l'attribution. Si tu diffuses des travaux derives
+de ce corpus, cite la publication de reference :
+
+  PARHAF, a human-authored corpus of clinical reports for fictitious patients
+  in French. Tannier et al., 2026.
+
+Le corpus ne contient aucune donnee de patient reel. Le dataset exclut
+explicitement les usages suivants : decision clinique ou soin, revendication
+de performance clinique, inference epidemiologique, evaluation de la securite
+en conditions reelles, remplacement de donnees cliniques reelles en
+production.
+
+---------------------------------------------------------------------------
+Dependances
+---------------------------------------------------------------------------
+
+HAPI FHIR      Apache License 2.0   https://hapifhir.io
+Spring Boot    Apache License 2.0   https://spring.io/projects/spring-boot
+Vavr           Apache License 2.0   https://vavr.io

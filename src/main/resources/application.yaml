@@ -1,0 +1,38 @@
+spring:
+  main:
+    web-application-type: none
+    banner-mode: "off"
+
+logging:
+  level:
+    root: INFO
+    fr.ftoumhub.parhaf: INFO
+    ca.uhn.fhir: WARN
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %logger{20} - %msg%n"
+
+parhaf:
+  # Serveur HAPI cible
+  server-base: http://localhost:8080/fhir
+
+  # Corpus au format standalone, produit par scripts/export-parhaf.py
+  corpus-path: ./data/parhaf/corpus.json
+
+  # Filtre optionnel. Vide = tout le corpus.
+  # Exemple pour un premier essai :
+  # specialties:
+  #   - PNEUMOLOGIE
+  #   - CARDIOLOGIE
+  specialties: []
+
+  # 0 = pas de limite. Mets 20 pour un premier run.
+  limit: 0
+
+  threads: 4
+  max-attempts: 3
+  backoff-millis: 500
+  socket-timeout-millis: 60000
+  custodian-name: "PARHAF (corpus fictif)"
+
+  # true = affiche le premier bundle et sort, sans rien envoyer
+  dry-run: false

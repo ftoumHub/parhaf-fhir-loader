@@ -1,0 +1,38 @@
+services:
+
+  db:
+    image: postgres:16
+    container_name: parhaf-db
+    environment:
+      POSTGRES_DB: hapi
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: hapi
+    volumes:
+      - hapi-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hapi -d hapi"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  fhir:
+    image: hapiproject/hapi:latest
+    container_name: parhaf-fhir
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      # Config autonome : elle REMPLACE l'application.yaml par defaut du starter,
+      # elle doit donc contenir le minimum vital (datasource comprise).
+      - ./config/hapi-fr.yaml:/app/config/application.yaml:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/fhir/metadata > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
+
+volumes:
+  hapi-db:
